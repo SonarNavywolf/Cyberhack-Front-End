@@ -64,9 +64,9 @@ export default function ManageJobsPage() {
       title: values.title,
       description: values.description,
       category: values.category,
-      end_date: values.endDate,
+      end_date: values.end_date,
       provider_id: user_id,
-      start_date: values.startDate,
+      start_date: values.start_date,
     };
 
     axios

@@ -30,15 +30,16 @@ const Table1 = (props) => {
         <Table striped hover>
           <thead>
             <tr className={classes.tableHeader}>
+              <th>Job Id</th>
               <th>Title</th>
               <th>Category</th>
-              <th>First Created</th>
-              <th>Last Modified</th>
+              <th>Start Date</th>
+              <th>End Date</th>
             </tr>
           </thead>
           <tbody>
             {props.jobData.map((job) => (
-              <JobItem jobInfo={job} key={job._id} />
+              <JobItem jobInfo={job} key={job.job_id} />
             ))}
           </tbody>
         </Table>

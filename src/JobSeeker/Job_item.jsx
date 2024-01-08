@@ -38,7 +38,7 @@ function Jobitem({ item, jobApply }) {
             <div>Apply From:</div>
             <div className={classes.dates}>
               <i className="bi bi-calendar2-check"></i>
-              <span className="mx-2">{item.startDate}</span>
+              <span className="mx-2">{item.start_date}</span>
             </div>
           </div>
         </ListGroupItem>
@@ -48,7 +48,7 @@ function Jobitem({ item, jobApply }) {
             <div>Apply Before:</div>
             <div className={classes.dates}>
               <i className="bi bi-calendar-x"></i>
-              <span className="mx-2">{item.startDate}</span>
+              <span className="mx-2">{item.end_date}</span>
             </div>
           </div>
         </ListGroupItem>

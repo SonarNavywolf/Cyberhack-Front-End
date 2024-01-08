@@ -6,30 +6,25 @@ import Config from "../../../config/Config.json";
 const JobItem = (props) => {
   const editButtonHandler = () => {
     axios
-      .get(`${Config.SERVER_URL + "provider/jobs/" + props.jobInfo._id}`, {
-        headers: {
-          Authorization: "Bearer " + props.token,
-        },
-      })
-
+      .get(`${Config.SERVER_URL + "api/posts/provider/jobs/fetch/" + props.jobInfo.job_id}`)
       .then((res) => {
+        console.log('job', res.data);
         props.onEdit(res.data.job);
       })
       .catch((err) => console.log(err));
     // props.onEdit(props.jobInfo);
   };
   const deleteButtonHandler = () => {
-    props.onDelete(props.jobInfo._id);
+    props.onDelete(props.jobInfo.job_id);
   };
   return (
-    <tr className={classes.row} key={props.jobInfo._id}>
-      {/* <td>{props.jobInfo._id}</td>
-      <td>{props.jobInfo.providerId}</td> */}
+    <tr className={classes.row} key={props.jobInfo.job_id}>
+      <td>{props.jobInfo.job_id}</td>
       <td>{props.jobInfo.title}</td>
       <td>{props.jobInfo.description}</td>
       <td>{props.jobInfo.category}</td>
-      <td>{props.jobInfo.startDate}</td>
-      <td>{props.jobInfo.endDate}</td>
+      <td>{props.jobInfo.start_date}</td>
+      <td>{props.jobInfo.end_date}</td>
       <td className={classes.actions}>
         <button
           className={`${classes.edit} ${classes.button}`}

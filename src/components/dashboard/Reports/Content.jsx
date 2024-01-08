@@ -14,7 +14,7 @@ import useTable from "../../../hooks/useTable";
 import TableFooter from "../Tables/TableFooter";
 import { CSVLink } from "react-csv";
 import axios from "axios";
-
+import jwtDecode from "jwt-decode";
 import Config from "../../../config/Config.json";
 // import dateFormat from 'dateformat';
 
@@ -31,25 +31,28 @@ function Reports() {
   })[1];
 
   const [errors, setErrors] = useState({});
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
+    /*
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+    */
+    console.log('trying to fetch jobs data')
     axios
-      .get(`${Config.SERVER_URL + "admin/jobs"}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/users/jobs"}`)
       .then((res) => {
+        console.log('jobsData', res.data);
         setReportsData([...res.data.jobs]);
       });
   }, []);
 
   const validateStart = () => {
     let error = "";
-    if (!forminputs["startdate"] && forminputs["enddate"]) {
+    if (!forminputs["start_date"] && forminputs["end_date"]) {
       error = "please enter start date";
     }
-    if (!forminputs["startdate"] && !forminputs["enddate"]) {
+    if (!forminputs["start_date"] && !forminputs["end_date"]) {
       setErrors({});
     }
     setErrors((values) => ({ ...values, startdate: error }));
@@ -57,14 +60,14 @@ function Reports() {
 
   const validateEnd = () => {
     let error = "";
-    if (!forminputs["enddate"] && forminputs["startdate"]) {
+    if (!forminputs["end_date"] && forminputs["start_date"]) {
       error = "please enter end date";
     }
-    if (!forminputs["startdate"] && !forminputs["enddate"]) {
+    if (!forminputs["start_date"] && !forminputs["end_date"]) {
       setErrors({});
-    } else if (forminputs["enddate"] && forminputs["startdate"]) {
-      let startdate = new Date(forminputs["startdate"]);
-      let enddate = new Date(forminputs["enddate"]);
+    } else if (forminputs["end_date"] && forminputs["start_date"]) {
+      let startdate = new Date(forminputs["start_date"]);
+      let enddate = new Date(forminputs["end_date"]);
       if (startdate > enddate) {
         error = "end date should be greater than start date";
       }
@@ -110,23 +113,19 @@ function Reports() {
   const headers = [
     {
       label: "JobId",
-      key: "_id",
+      key: "job_id",
     },
-    // {
-    //   label: "ProviderId",
-    //   key: "providerId",
-    // },
     {
       label: "Title",
       key: "title",
     },
     {
       label: "StartDate",
-      key: "startDate",
+      key: "start_date",
     },
     {
       label: "EndDate",
-      key: "endDate",
+      key: "end_date",
     },
   ];
 
@@ -159,7 +158,7 @@ function Reports() {
                     className={classes.str2}
                     onBlur={validateStart}
                     onChange={handleChange}
-                    name="startdate"
+                    name="start_date"
                     type="date"
                     placeholder="Start Date"
                   />
@@ -185,7 +184,7 @@ function Reports() {
                     className={classes.str21}
                     onBlur={validateEnd}
                     onChange={handleChange}
-                    name="enddate"
+                    name="end_date"
                     type="date"
                     placeholder="End Date"
                   />
@@ -217,25 +216,21 @@ function Reports() {
           <Table striped hover>
             <thead>
               <tr className={classes.tableHeader}>
-                {/* <th>JobId</th>
-                <th>providerId</th> */}
+                <th>JobId</th>
                 <th>Title</th>
                 <th>Category</th>
                 <th>StartDate</th>
                 <th>EndDate</th>
-                {/* <th>Last Updated</th> */}
               </tr>
             </thead>
             <tbody className={classes.tableBody}>
               {slice.map((contact) => (
-                <tr key={contact._id}>
-                  {/* <td>{contact.jobId}</td>
-                  <td>{contact.providerId}</td> */}
+                <tr key={contact.job_id}>
+                  <td>{contact.job_id}</td>
                   <td>{contact.title}</td>
                   <td>{contact.category}</td>
-                  <td>{contact.startDate}</td>
-                  <td>{contact.endDate}</td>
-                  {/* <td>{contact.updatedAt}</td> */}
+                  <td>{contact.start_date}</td>
+                  <td>{contact.end_date}</td>
                 </tr>
               ))}
             </tbody>

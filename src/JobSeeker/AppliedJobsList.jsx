@@ -5,6 +5,8 @@ import axios from "axios";
 import Jobitem from "./Job_item";
 import classes from "./Modalf.module.css";
 import Config from "../config/Config.json";
+import jwtDecode from "jwt-decode";
+const url = require("url");
 
 let jobsData = [];
 const AppliedJobs = () => {
@@ -42,14 +44,18 @@ const AppliedJobs = () => {
   };
 
   useEffect(() => {
+    //retrieving user_id from auth token
+    const authToken = localStorage.getItem("token");
+    const readAuthToken = jwtDecode(authToken);
+    //const params = { user_id: readAuthToken.user_id };
+
+    const user_id = readAuthToken.user_id;
+
     axios
-      .get(`${Config.SERVER_URL + "user/jobsApplied"}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/jobsapplied/" + user_id}`)
       .then((response) => {
         jobsData = response.data.jobsApplied;
+        console.log('jobsData', response.data.jobsApplied);
         setJobs(response.data.jobsApplied);
       })
       .catch((err) => {
@@ -86,7 +92,7 @@ const AppliedJobs = () => {
       <Container fluid>
         <div className={classes.grid}>
           {jobs.map((jobItem) => (
-            <Jobitem key={jobItem._id} item={jobItem} />
+            <Jobitem key={jobItem.job_id} item={jobItem} />
           ))}
         </div>
       </Container>

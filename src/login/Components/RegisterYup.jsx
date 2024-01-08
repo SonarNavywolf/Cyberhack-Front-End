@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Row, Col, Container, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Config from "../../config/Config.json";
 import Header from "./Header";
 import classes from "./Register.module.css";
 import {
@@ -34,7 +34,7 @@ const Register = (props) => {
     setShowSpinner(true);
     console.log('incoming values', values);
     axios
-      .post(`http://localhost:5000/api/users/register`, { ...values })
+      .post(`${Config.SERVER_URL + "api/users/register"}`, { ...values })
       .then((res) => {
         setShowSpinner(false);
         toast.success(res.data.message, {
@@ -140,6 +140,7 @@ const Register = (props) => {
                     </div>
                     <div className={classes.formInputs}>
                       <SelectInput name="role_name" id="role_name" label="Role">
+                        <option value="--select--">Select</option>
                         <option value="ngo">NGO</option>
                         <option value="cyber_security_expert">Cyber Security Expert</option>
                       </SelectInput>

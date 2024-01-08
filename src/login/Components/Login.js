@@ -37,7 +37,7 @@ const Login = () => {
       console.log('user inputs', inputs);
       setBackendErrors({ show: false, message: "" });
       axios
-        .post("http://localhost:5000/api/users/login", inputs)
+        .post(`${Config.SERVER_URL + "api/users/login"}`, inputs)
         .then((res) => {
           const token = res.data.token;
           dispatch({

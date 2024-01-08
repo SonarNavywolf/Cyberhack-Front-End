@@ -1,24 +1,17 @@
 import axios from "axios";
-
+import jwtDecode from "jwt-decode";
 import classes from "./ApplicantItem.module.css";
 import Config from "../../../config/Config.json";
 
 const ApplicantItem = ({ setAction, ...props }) => {
-  const applicantItemId = props.applicantItem._id;
+  const applicant_user_id= props.applicantItem.user_id;
+  const job_id= props.applicantItem.job_id;
   const token = props.token;
   const shortlistCandidateHandler = () => {
+    const readAuthToken = jwtDecode(token);
+    const provider_id = readAuthToken.user_id;
     axios
-      .patch(
-        `${
-          Config.SERVER_URL + "provider/applicants/shortlist/" + applicantItemId
-        }`,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
+      .get(`${Config.SERVER_URL + "api/posts/provider/shortlist/" + applicant_user_id + "/" + provider_id + "/" + job_id}`)
       .then((res) => {
         setAction((prev) => !prev);
       })
@@ -27,17 +20,11 @@ const ApplicantItem = ({ setAction, ...props }) => {
       });
   };
   const rejectCandidateHandler = () => {
+    const readAuthToken = jwtDecode(token);
+    const provider_id = readAuthToken.user_id;
     axios
-      .patch(
-        `${
-          Config.SERVER_URL + "provider/applicants/reject/" + applicantItemId
-        }`,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
+      .get(
+        `${Config.SERVER_URL + "api/posts/provider/reject/" + applicant_user_id+ "/" + provider_id + "/" + job_id}`
       )
       .then((res) => {
         setAction((prev) => !prev);
@@ -47,17 +34,15 @@ const ApplicantItem = ({ setAction, ...props }) => {
       });
   };
   const viewResumeHandler = () => {
+    const readAuthToken = jwtDecode(token);
+    const provider_id = readAuthToken.user_id;
     axios
       .get(
         `${
           Config.SERVER_URL +
-          "provider/applicants/view-resume/" +
-          applicantItemId
+          "api/posts/provider/view-resume/" + applicant_user_id+ "/" + provider_id + "/" + job_id
         }`,
         {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
           responseType: "blob",
         }
       )
@@ -73,7 +58,7 @@ const ApplicantItem = ({ setAction, ...props }) => {
 
   return (
     <tr className={classes.row}>
-      <td>{props.applicantItem.userId.name}</td>
+      <td>{props.applicantItem.title}</td>
       <td>
         <button className={classes.button} onClick={viewResumeHandler}>
           View Resume

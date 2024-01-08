@@ -6,6 +6,7 @@ import UserTable from "../../components/dashboard/Tables/UserTable";
 import axios from "axios";
 import Config from "../../config/Config.json";
 import SpinnerComponent from "../../components/UI/SpinnerComponent";
+import jwtDecode from "jwt-decode";
 
 const AdminDashboardPage = () => {
   const [userData, setUserData] = useState([]);
@@ -22,25 +23,18 @@ const AdminDashboardPage = () => {
   useEffect(() => {
     document.title = Config.TITLE.DASHBOARD;
     setShowSpinner(true);
-
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
     axios
-      .get(`${Config.SERVER_URL + "admin/dashboard-stats"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/admin/dashboard-stats/" + user_id}`)
       .then((res) => {
         setShowSpinner(false);
         setStats(res.data.stats);
       });
     axios
-      .get(`${Config.SERVER_URL + "admin/dashboard-recents"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/admin/dashboard-recents/" + user_id}`)
       .then((res) => {
-        // console.log(res.data);
+        console.log('recent data',res.data);
         setShowSpinner(false);
         setUserData(res.data.recentUsers);
         setJobData(res.data.recentJobs);

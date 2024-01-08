@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 const ApplicantItem = (props) => {
   const navigate = useNavigate();
   const viewApplicantsHandler = () => {
-    navigate(`/manage-applicants/${props.jobItem._id}`);
+    navigate(`/manage-applicants/${props.jobItem.job_id}`);
   };
   const viewShortlistsHandler = () => {
-    navigate(`/view-shortlists/${props.jobItem._id}`);
+    navigate(`/view-shortlists/${props.jobItem.job_id}`);
   };
   return (
     <tr className={classes.row}>

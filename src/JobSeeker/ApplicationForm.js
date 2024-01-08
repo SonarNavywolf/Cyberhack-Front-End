@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Config from "../config/Config.json";
 import SpinnerComponent from "../components/UI/SpinnerComponent";
+import jwtDecode from "jwt-decode";
 
 toast.configure();
 
@@ -34,20 +35,33 @@ function Register(props) {
     event.preventDefault();
     const formData = new FormData();
     if (validate()) {
+      console.log('inputs', inputs);
+      console.log('props', props);
       formData.append("name", inputs.name);
       formData.append("email", inputs.email);
       formData.append("resume", inputs.Resume);
-      formData.append("jobId", props.job._id);
-      formData.append("providerId", props.job.providerId);
+      formData.append("jobId", props.job.job_id);
+      formData.append("providerId", props.job.provider_id);
+      //retrieving user_id from auth token
+      const authToken = localStorage.getItem("token");
+      const readAuthToken = jwtDecode(authToken);
+      formData.append("userId", readAuthToken.user_id);
+
+      //console.log('formData', formData.values);
+      /*
+      for (var key of formData.entries()) {
+        console.log(key[0] + ', ' + key[1])
+      }
+      */
 
       setSpinner(true);
       axios
         .post(
-          `${Config.SERVER_URL + "user/apply/" + props.job._id}`,
-          formData,
-          {
+          `${Config.SERVER_URL + "api/posts/apply"}`,
+           formData,
+           {
             headers: {
-              Authorization: "Bearer " + localStorage.getItem("token"),
+              enctype: "multipart/form-data",
             },
           }
         )

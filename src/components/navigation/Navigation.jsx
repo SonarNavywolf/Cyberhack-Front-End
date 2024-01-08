@@ -1,10 +1,12 @@
 import React from "react";
-
+import jwtDecode from "jwt-decode";
 import { Link, useNavigate, NavLink } from "react-router-dom";
 import classes from "./Navigation.module.css";
 import { Navbar, Container, Nav, Dropdown } from "react-bootstrap";
 import { useDispatch } from "react-redux";
-import jwtDecode from "jwt-decode";
+import axios from "axios";
+import Config from "../../config/Config.json";
+import { toast, ToastContainer } from "react-toastify";
 
 const Navigation = () => {
   // const selectauthToken = (rootstate) => rootstate.authToken;
@@ -17,6 +19,26 @@ const Navigation = () => {
   const redAuthToken = jwtDecode(authToken);
 
   const logoutHandler = () => {
+    dispatch({ type: "CLEARAUTHTOKEN" });
+    navigate("/", { replace: true });
+  };
+
+  const deleteAccountHandler = () => {
+    //delete account code
+    const user_id = redAuthToken.user_id;
+    axios
+      .delete(
+        `${Config.SERVER_URL + "api/users/" + user_id}`)
+      .then((result) => {
+        console.log(result);
+        toast.success(result.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Oops something went wrong");
+      });
+    
+    // clear token and go to login page
     dispatch({ type: "CLEARAUTHTOKEN" });
     navigate("/", { replace: true });
   };
@@ -42,11 +64,11 @@ const Navigation = () => {
           <span className={classes.logo}>
             <i className="bi bi-search"></i>
           </span>
-          Job Hunt
+          CYBERHACK
         </NavLink>
         <Navbar.Toggle aria-controls="navbar-dark-example" />
         <Navbar.Collapse id="navbar-dark-example">
-          {redAuthToken.role === "Admin" && (
+          {redAuthToken.role_name === "admin" && (
             <Nav className={`me-auto ${classes.pageLinks}`}>
               <NavLink
                 className={(navData) =>
@@ -74,7 +96,7 @@ const Navigation = () => {
               </NavLink>
             </Nav>
           )}
-          {redAuthToken.role === "Job Provider" && (
+          {redAuthToken.role_name === "ngo" && (
             <Nav className={`me-auto ${classes.pageLinks}`}>
               <NavLink
                 className={(navData) =>
@@ -102,7 +124,7 @@ const Navigation = () => {
               </NavLink>
             </Nav>
           )}
-          {redAuthToken.role === "User" && (
+          {redAuthToken.role_name === "cyber_security_expert" && (
             <Nav className={`me-auto ${classes.pageLinks}`}>
               <NavLink
                 className={(navData) =>
@@ -132,7 +154,9 @@ const Navigation = () => {
             </Nav>
           )}
           <Nav>
-            {/* <NavDropdown
+            {
+            /*
+              <NavDropdown
               id="nav-dropdown-dark-example"
               title={
                 <span className={classes.username}>
@@ -166,7 +190,7 @@ const Navigation = () => {
                   <span className={classes.userLogo}>
                     <i className="bi bi-person-circle"></i>
                   </span>
-                  {redAuthToken.userName}
+                  {redAuthToken.first_name}
                 </span>
               </Dropdown.Toggle>
 
@@ -174,6 +198,14 @@ const Navigation = () => {
                 <Link to="/change-password" className={classes.changePassword}>
                   Change Password
                 </Link>
+                <Dropdown.Divider />
+                <Dropdown.Item
+                  as={"button"}
+                  onClick={deleteAccountHandler}
+                  className={classes.changePassword}
+                >
+                  Delete account
+                </Dropdown.Item>
                 <Dropdown.Divider />
                 <Dropdown.Item
                   as={"button"}

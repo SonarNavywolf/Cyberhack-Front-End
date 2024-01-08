@@ -6,6 +6,7 @@ import Table1 from "../../Job Provider/Components/Table/dashboardTable.js";
 import Config from "../../config/Config.json";
 import axios from "axios";
 import SpinnerComponent from "../../components/UI/SpinnerComponent";
+import jwtDecode from "jwt-decode";
 
 export default function ProvDashboard() {
   const [jobs, setJobs] = useState([]);
@@ -14,16 +15,15 @@ export default function ProvDashboard() {
     applicantsCount: 0,
   });
   const [showSpinner, setShowSpinner] = useState(false);
-
   const token = localStorage.getItem("token");
+
   useEffect(() => {
     setShowSpinner(true);
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+
     axios
-      .get(`${Config.SERVER_URL + "provider/dashboard-stats"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/dashboard-stats/"+ user_id}`)
       .then((res) => {
         setShowSpinner(false);
         setStats(res.data.stats);
@@ -34,11 +34,7 @@ export default function ProvDashboard() {
       });
 
     axios
-      .get(`${Config.SERVER_URL + "provider/dashboard-recents"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/dashboard-recents/"+ user_id}`)
       .then((res) => {
         setShowSpinner(false);
         setJobs(res.data.recentJobs);

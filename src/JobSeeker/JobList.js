@@ -34,12 +34,9 @@ const Jobs = () => {
 
   useEffect(() => {
     axios
-      .get(`${Config.SERVER_URL + "user/jobsAvailable"}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/users/jobs"}`)
       .then((response) => {
+        console.log('response', response.data);
         jobsData = response.data.jobs;
         setJobs(response.data.jobs);
       })
@@ -66,7 +63,7 @@ const Jobs = () => {
       <Container fluid>
         <div className={classes.grid}>
           {jobs.map((jobItem) => (
-            <Jobitem key={jobItem._id} item={jobItem} jobApply={jobApply} />
+            <Jobitem key={jobItem.job_id} item={jobItem} jobApply={jobApply} />
           ))}
         </div>
       </Container>

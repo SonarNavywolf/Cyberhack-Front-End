@@ -4,10 +4,11 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import TableFooter from "../Table/TableFooter";
 import useTable from "../Hooks/useTable";
-
+import Config from "../../../config/Config.json";
 import SpinnerComponent from "../../../components/UI/SpinnerComponent";
 import classes from "./ApplicantTab.module.css";
 import ManageApplicantItem from "./ManageApplicantItem";
+import jwtDecode from "jwt-decode";
 let applicantsdata = [];
 
 const ManageJobApplicants = () => {
@@ -24,28 +25,31 @@ const ManageJobApplicants = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+    console.log('userId', user_id);
+    console.log('jobId',jobId);
     axios
-      .get(`http://localhost:8080/provider/view-applicants/${jobId}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/provider/view-applicants/" + user_id + "/" + jobId}`)
       .then((response) => {
         const data = response.data.applicants;
+        console.log('applicantData', data);
         setShowSpinner(false);
         applicantsdata = [...data];
+        //console.log('dataApplicants', applicantsData);
         setApplicantsData(data);
       })
       .catch((err) => {
         setShowSpinner(false);
         console.log(err);
       });
-  }, [jobId, action, token]);
+  }, [jobId, action, token, applicantsData]);
 
   const searchApplicantHandler = (event) => {
+    console.log('data-applicant', applicantsData);
     setApplicantsData(
       applicantsdata.filter((applicant) =>
-        applicant.userId.name
+        applicant.first_name
           .toLowerCase()
           .includes(event.target.value.toLowerCase())
       )
@@ -90,7 +94,7 @@ const ManageJobApplicants = () => {
                 {slice.map((applicantItem) => {
                   return (
                     <ManageApplicantItem
-                      key={applicantItem._id}
+                      key={applicantItem.job_id}
                       applicantItem={applicantItem}
                       setAction={setAction}
                       token={token}

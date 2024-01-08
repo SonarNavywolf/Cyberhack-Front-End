@@ -3,7 +3,7 @@ import axios from "axios";
 import { Container } from "react-bootstrap";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import jwtDecode from "jwt-decode";
 import FormikForm from "../../components/dashboard/ManageUsers/AddUsersFormik/FormikForm";
 import ManageUsers from "../../components/dashboard/ManageUsers/ManageUsers";
 import Config from "../../config/Config.json";
@@ -27,6 +27,7 @@ const ManageUsersPage = () => {
   const token = localStorage.getItem("token");
 
   const editUserHandler = (userData) => {
+    console.log('inside edit user handler', userData);
     setEditUserModal({ show: true, inititalValues: userData });
   };
 
@@ -45,15 +46,8 @@ const ManageUsersPage = () => {
     setDeleteModal(false);
     setSpinner(true);
     axios
-      .delete(
-        `${Config.SERVER_URL + "admin/users/" + userId}`,
-        // ,`http://localhost:8080/admin/users/${userId}`
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      )
+      .put(
+        `${Config.SERVER_URL + "api/admin/users/" + userId}`)
       .then((result) => {
         // console.log(result);
         setAction(!action);
@@ -71,13 +65,8 @@ const ManageUsersPage = () => {
     setSpinner(true);
     axios
       .post(
-        `${Config.SERVER_URL + "admin/add-user"}`,
-        { ...values },
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
+        `${Config.SERVER_URL + "api/admin/add-user"}`,
+        { ...values }
       )
       .then((res) => {
         setSpinner(false);
@@ -92,25 +81,19 @@ const ManageUsersPage = () => {
       });
   };
   const editUserItemHandler = (values) => {
-    const u_id = values._id;
+    //console.log("edit click", userId);
+    console.log('values',values);
+    const u_id = values.user_id;
     const updatedValues = {
-      name: values.name,
+      first_name: values.first_name,
+      last_name: values.last_name,
       email: values.email,
       password: values.password,
-      mobile: values.mobile,
-      age: values.age,
-      gender: values.gender,
-      qualification: values.qualification,
-      experience: values.experience,
-      role: values.role,
+      role_name: values.role_name,
     };
     setSpinner(true);
     axios
-      .put(`${Config.SERVER_URL + "admin/edit-user/" + u_id}`, updatedValues, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .put(`${Config.SERVER_URL + "api/admin/edit-user/" + u_id}`, updatedValues)
       .then((res) => {
         // console.log(res);
         setEditUserModal((prev) => {

@@ -29,16 +29,16 @@ const UserTable = (props) => {
         <Table striped hover>
           <thead>
             <tr className={classes.tableHeader}>
-              {/* <th>UserId</th> */}
-              <th>Name</th>
+              <th>User Id</th>
+              <th>User Role</th>
+              <th>First Name</th>
+              <th>Last Name</th>
               <th>Email</th>
-              <th>First Created</th>
-              <th>Last Modified</th>
             </tr>
           </thead>
           <tbody>
             {props.usersData.map((user) => (
-              <UserItem userInfo={user} key={user._id} />
+              <UserItem userInfo={user} key={user.user_id} />
             ))}
           </tbody>
         </Table>

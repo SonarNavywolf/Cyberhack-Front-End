@@ -1,15 +1,13 @@
 import dateFormatter from "../../../util/dateFormatter";
 import classes from "./UserItem.module.css";
 const UserItem = (props) => {
-  let formattedCreatedAt = dateFormatter(props.userInfo.createdAt);
-  let formattedUpdatedAt = dateFormatter(props.userInfo.updatedAt);
   return (
     <tr className={classes.row}>
-      {/* <td>{props.userInfo.id}</td> */}
-      <td>{props.userInfo.name}</td>
+      <td>{props.userInfo.user_id}</td>
+      <td>{props.userInfo.role_name}</td>
+      <td>{props.userInfo.first_name}</td>
+      <td>{props.userInfo.last_name}</td>
       <td>{props.userInfo.email}</td>
-      <td>{formattedCreatedAt}</td>
-      <td>{formattedUpdatedAt}</td>
     </tr>
   );
 };

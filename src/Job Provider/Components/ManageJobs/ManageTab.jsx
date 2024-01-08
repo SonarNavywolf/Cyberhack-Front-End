@@ -7,7 +7,7 @@ import "./Data.json";
 import TableFooter from "../Table/TableFooter";
 import useTable from "../Hooks/useTable";
 import Config from "../../../config/Config.json";
-
+import jwtDecode from "jwt-decode";
 import classes from "./ManageTab.module.css";
 import JobItem from "./JobItem";
 
@@ -22,19 +22,15 @@ const ManageTab = (props) => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
     const getData = async () => {
       const response = await axios.get(
-        `${Config.SERVER_URL + "provider/jobs"}`,
-        {
-          headers: {
-            Authorization: "Bearer " + token,
-          },
-        }
-      );
+        `${Config.SERVER_URL + "api/posts/provider/jobs/" + user_id}`);
       setShowSpinner(false);
 
       const jobData = response.data.jobs;
-      // console.log(data);
+      console.log('jobData',jobData);
       setJobData(jobData);
       setStaticJobData(jobData);
     };
@@ -92,9 +88,8 @@ const ManageTab = (props) => {
             <Table striped hover>
               <thead>
                 <tr className={classes.tableHeader}>
-                  {/* <th>Job Id</th>
-                  <th>Provider Id</th> */}
-                  <th> Job Title</th>
+                  <th>Job Id</th>
+                  <th>Job Title</th>
                   <th>Job Description</th>
                   <th>Category</th>
                   <th>Start Date</th>
@@ -107,7 +102,7 @@ const ManageTab = (props) => {
                   return (
                     <JobItem
                       token={token}
-                      key={job._id}
+                      key={job.job_id}
                       jobInfo={job}
                       onEdit={editModalHandler}
                       onDelete={props.onShowDelete}

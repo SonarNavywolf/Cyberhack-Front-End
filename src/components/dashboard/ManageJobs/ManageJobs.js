@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import jwtDecode from "jwt-decode";
 import ManageTab from "./ManageTab";
 import ReactModal from "../../UI/ReactModal";
 import AddJob from "./AddJob/AddJob";
@@ -27,15 +27,14 @@ export default function ManageJobs() {
   const token = localStorage.getItem("token");
 
   const addJobHander = (values) => {
-    // console.log(values);
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+    values.provider_id = user_id;
+    //console.log('form values',values);
     setSpinner(true);
-
+    
     axios
-      .post(`${Config.SERVER_URL + "admin/add-job"}`, values, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .post(`${Config.SERVER_URL + "api/admin/add-job"}`, values, user_id)
       .then((res) => {
         // console.log(res);
         setSpinner(false);
@@ -51,27 +50,36 @@ export default function ManageJobs() {
   };
 
   const editJobHandler = (jobData) => {
+    console.log('inside admin editJobHandler');
+    console.log('jobData',jobData)
     setEditJobModal({ show: true, inititalValues: jobData });
   };
 
   const editJobItemHandler = (values) => {
-    const jobId = values._id;
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+    console.log('job values', values);
+    console.log('userId', user_id);
+    console.log('old job title', values.title);
+    console.log('updated job values', values);
+
+    const jobId = values.job_id;
+    const provider_id = user_id;
+
     const editValues = {
+      job_id: jobId,
       title: values.title,
       description: values.description,
       category: values.category,
-      startDate: values.startDate,
-      endDate: values.endDate,
+      end_date: values.end_date,
+      provider_id: provider_id,
+      start_date: values.start_date,
     };
     // console.log(editValues);
     setSpinner(true);
 
     axios
-      .put(`${Config.SERVER_URL + "admin/edit-job/" + jobId}`, editValues, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .put(`${Config.SERVER_URL + "api/admin/edit-job/" + jobId}`, editValues)
       .then((res) => {
         setEditJobModal((prev) => {
           return { show: false, inititalValues: prev.inititalValues };
@@ -98,11 +106,7 @@ export default function ManageJobs() {
     setDeleteModal(false);
     setSpinner(true);
     axios
-      .delete(`${Config.SERVER_URL + "admin/jobs/" + jobId}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .delete(`${Config.SERVER_URL + "api/admin/jobs/" + jobId}`)
       .then((result) => {
         setAction(!action);
         setSpinner(false);

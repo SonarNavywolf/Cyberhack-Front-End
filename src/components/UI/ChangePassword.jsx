@@ -1,13 +1,15 @@
 import React from "react";
 import { useSelector } from "react-redux";
-
+import axios from "axios";
 import { Form as BootStrapForm, Button } from "react-bootstrap";
 import { Formik, Form, useField } from "formik";
 import * as Yup from "yup";
 import classes from "./Changepassword.module.css";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-toast.configure();
+import Config from "../../config/Config.json";
+import jwtDecode from "jwt-decode";
+import { toast, ToastContainer } from "react-toastify";
+import { Link, useNavigate } from "react-router-dom";
 
 const MyTextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
@@ -36,9 +38,13 @@ const MyTextInput = ({ label, ...props }) => {
 };
 
 const ChangePassword = () => {
-  const selectauthToken = (rootstate) => rootstate.authToken;
-  const authToken = useSelector(selectauthToken);
-  console.log(authToken);
+  const navigate = useNavigate();
+  //const selectauthToken = (rootstate) => rootstate.authToken;
+  //const authToken = useSelector(selectauthToken);
+  const token = localStorage.getItem("token");
+  const readAuthToken = jwtDecode(token);
+  const user_id = readAuthToken.user_id;
+  console.log('user_id',user_id);
   return (
     <>
       <Formik
@@ -63,18 +69,27 @@ const ChangePassword = () => {
         })}
         onSubmit={(values, { setSubmitting }) => {
           setTimeout(() => {
-            alert(JSON.stringify(values, null, 2));
+            //alert(JSON.stringify(values, null, 2));
             setSubmitting(false);
           }, 400);
-          toast.success("Password Changed Successfully", {
-            position: "bottom-right",
-            autoClose: 4000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-          });
+          values.user_id = user_id;
+          axios
+            .post(`${Config.SERVER_URL + "api/users/resetpassword" }`,values)
+            .then((res) => {
+              console.log('resposne', res.data);
+              //props.onEdit(res.data.user);
+              toast.success(res.data.message, {
+                position: "bottom-right",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              navigate("/", { replace: true });
+            })
+            .catch((err) => console.log(err));
         }}
       >
         <Form>

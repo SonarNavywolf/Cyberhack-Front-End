@@ -1,7 +1,7 @@
 {
-  "SERVER_URL": "http://localhost:8080/",
+  "SERVER_URL": "http://localhost:5000/",
   "TITLE": {
-    "APP_TITLE": "JOB HUNT",
+    "APP_TITLE": "CYBERHACK",
     "LOGIN": "Login",
     "FORGOT_PASSWORD": "Forgot Password",
     "CHANGE_PASSWORD": "Change Password",

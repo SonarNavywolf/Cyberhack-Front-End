@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import TableFooter from "../Table/TableFooter";
 import useTable from "../Hooks/useTable";
-
+import jwtDecode from "jwt-decode";
 import SpinnerComponent from "../../../components/UI/SpinnerComponent";
 import classes from "./ApplicantTab.module.css";
 import ManageShortlistItem from "./ManageShortlistItem";
@@ -25,12 +25,12 @@ const ManageShortlisted = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
+    console.log('userId', user_id);
+    console.log('jobId',jobId);
     axios
-      .get(`${Config.SERVER_URL + "provider/view-shortlists/" + jobId}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/provider/view-shortlists/" + user_id + "/" + jobId}`)
       .then((response) => {
         const data = response.data.shortlists;
         setShowSpinner(false);
@@ -91,7 +91,7 @@ const ManageShortlisted = () => {
                 {slice.map((applicantItem) => {
                   return (
                     <ManageShortlistItem
-                      key={applicantItem._id}
+                      key={applicantItem.job_id}
                       applicantItem={applicantItem}
                       setAction={setAction}
                       token={token}

@@ -10,8 +10,8 @@ export default function AddJob(props) {
   let initialValues = {
     title: "",
     description: "",
-    startDate: "",
-    endDate: "",
+    start_date: "",
+    end_date: "",
     category: "",
   };
 
@@ -19,8 +19,8 @@ export default function AddJob(props) {
     initialValues = {
       title: props.jobInfo.title,
       description: props.jobInfo.description,
-      startDate: props.jobInfo.startDate,
-      endDate: props.jobInfo.endDate,
+      start_date: props.jobInfo.start_date,
+      end_date: props.jobInfo.end_date,
       category: props.jobInfo.category,
     };
   }
@@ -35,8 +35,8 @@ export default function AddJob(props) {
     description: Yup.string()
       .max(100, "Must be 100 characters or less")
       .required("Required"),
-    startDate: Yup.date().required("Required"),
-    endDate: Yup.date().required("Required"),
+    start_date: Yup.date().required("Required"),
+    end_date: Yup.date().required("Required"),
     category: Yup.string().required("Required"),
   });
 
@@ -68,17 +68,17 @@ export default function AddJob(props) {
               />
               <SelectInput label="Category " name="category">
                 <option value="">Select</option>
-                <option value="Software Development">
-                  Software Development
+                <option value="Cyber Security Engineer">
+                  Cyber Security Engineer
                 </option>
-                <option value="HR Department">HR Department</option>
-                <option value="Techincal and Hardware">
-                  Techincal and Hardware
+                <option value="Software Developer">Software Developer</option>
+                <option value="Techincal and Hardware Engineer">
+                  Techincal and Hardware Engineer
                 </option>
-                <option value="Front Desk">Front Desk</option>
+                <option value="Penetration Test Engineer">Penetration Test Engineer</option>
               </SelectInput>
-              <TextField label="Start date " name="startDate" type="date" />
-              <TextField label="  End date " name="endDate" type="date" />
+              <TextField label="Start date " name="start_date" type="date" />
+              <TextField label="  End date " name="end_date" type="date" />
             </div>
 
             {!props.jobInfo ? (

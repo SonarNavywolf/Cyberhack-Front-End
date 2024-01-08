@@ -22,13 +22,10 @@ const ManageTab = (props) => {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await axios.get(`${Config.SERVER_URL + "admin/jobs"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      });
+      const response = await axios.get(`${Config.SERVER_URL + "api/users/jobs"}`);
 
       const jobData = response.data.jobs;
+      console.log('jobData',jobData);
       setShowSpinner(false);
 
       // console.log(data);
@@ -88,8 +85,10 @@ const ManageTab = (props) => {
             <Table striped hover>
               <thead>
                 <tr className={classes.tableHeader}>
-                  <th> Job Title</th>
+                  <th>Job Id</th>
+                  <th>Job Title</th>
                   <th>Job Description</th>
+                  <th>Category</th>
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Actions</th>
@@ -100,7 +99,7 @@ const ManageTab = (props) => {
                   return (
                     <JobItem
                       token={token}
-                      key={job._id}
+                      key={job.job_id}
                       jobInfo={job}
                       onEdit={editModalHandler}
                       onDelete={props.onShowDelete}

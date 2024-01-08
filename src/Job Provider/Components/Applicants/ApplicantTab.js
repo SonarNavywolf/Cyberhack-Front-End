@@ -8,6 +8,7 @@ import SpinnerComponent from "../../../components/UI/SpinnerComponent";
 import classes from "./ApplicantTab.module.css";
 import JobApplicantItem from "./JobApplicantItem";
 import Config from "../../../config/Config.json";
+import jwtDecode from "jwt-decode";
 let jobdata = [];
 
 const ManageTab = () => {
@@ -16,16 +17,15 @@ const ManageTab = () => {
   const [showSpinner, setShowSpinner] = useState(true);
 
   const { slice, range } = useTable(jobData, page, 5);
-
+  const token = localStorage.getItem("token");
   useEffect(() => {
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
     axios
-      .get(`${Config.SERVER_URL + "provider/jobs"}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/posts/provider/jobs/"+ user_id}`)
       .then((response) => {
         const data = response.data.jobs;
+        console.log('data', data);
         setShowSpinner(false);
         jobdata = [...data];
         setJobData(data);
@@ -34,7 +34,7 @@ const ManageTab = () => {
         setShowSpinner(false);
         console.log(err);
       });
-  }, []);
+  }, [token]);
 
   const searchJobHandler = (event) => {
     setJobData(
@@ -81,7 +81,7 @@ const ManageTab = () => {
               <tbody className={classes.tableBody}>
                 {slice.map((jobItem) => {
                   return (
-                    <JobApplicantItem key={jobItem._id} jobItem={jobItem} />
+                    <JobApplicantItem key={jobItem.job_id} jobItem={jobItem} />
                   );
                 })}
               </tbody>

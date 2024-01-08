@@ -7,27 +7,23 @@ const ManageUserItem = (props) => {
   const token = localStorage.getItem("token");
   const editButtonHandler = () => {
     axios
-      .get(`${Config.SERVER_URL + "admin/users/" + props.userInfo._id}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
-
+      .get(`${Config.SERVER_URL + "api/users/" + props.userInfo.user_id}`)
       .then((res) => {
+        console.log('resposne', res.data.user);
         props.onEdit(res.data.user);
       })
       .catch((err) => console.log(err));
   };
   const deleteButtonHandler = () => {
-    props.onDelete(props.userInfo._id);
+    props.onDelete(props.userInfo.user_id);
   };
   return (
     <tr className={classes.row}>
-      <td>{props.userInfo.name}</td>
+      <td>{props.userInfo.user_id}</td>
+      <td>{props.userInfo.role_name}</td>
+      <td>{props.userInfo.first_name}</td>
+      <td>{props.userInfo.last_name}</td>
       <td>{props.userInfo.email}</td>
-      <td>{props.userInfo.mobile}</td>
-      <td>{props.userInfo.role}</td>
-      <td>{dateFormatter(props.userInfo.createdAt)}</td>
       <td className={classes.actions}>
         <button
           className={`${classes.edit} ${classes.button}`}

@@ -1,12 +1,14 @@
 import axios from "axios";
-
+import jwtDecode from "jwt-decode";
 import classes from "./ApplicantItem.module.css";
 import Config from "../../../config/Config.json";
 
 const ShortlistItem = ({ setAction, ...props }) => {
-  const applicantItemId = props.applicantItem._id;
+  const applicantItemId = props.applicantItem.job_id;
   const token = props.token;
   const viewResumeHandler = () => {
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
     axios
       .get(
         `${
@@ -33,8 +35,8 @@ const ShortlistItem = ({ setAction, ...props }) => {
 
   return (
     <tr className={classes.row}>
-      <td>{props.applicantItem.userId.name}</td>
-      <td>{props.applicantItem.userId.email}</td>
+      <td>{props.applicantItem.first_name + " " +props.applicantItem.last_name}</td>
+      <td>{props.applicantItem.email}</td>
       <td>
         <button className={classes.button} onClick={viewResumeHandler}>
           View Resume

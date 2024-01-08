@@ -16,6 +16,7 @@ import { CSVLink } from "react-csv";
 import axios from "axios";
 import Config from "../../../../config/Config.json";
 // import dateFormat from 'dateformat';
+import jwtDecode from "jwt-decode";
 
 function Reports() {
   const [reportsData, setReportsData] = useState([]);
@@ -30,14 +31,13 @@ function Reports() {
   });
 
   const [errors, setErrors] = useState({});
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchTd = async () => {
-      const res = await axios.get(`${Config.SERVER_URL + "provider/jobs/"}`, {
-        headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-        },
-      });
+      const readAuthToken = jwtDecode(token);
+      const user_id = readAuthToken.user_id;
+      const res = await axios.get(`${Config.SERVER_URL + "api/posts/provider/jobs/" + user_id}`);
 
       const updatedList = [...res.data.jobs];
       // const updatedList = ord.map(item =>
@@ -51,7 +51,7 @@ function Reports() {
       setReportsData(updatedList);
     };
     fetchTd();
-  }, []);
+  }, [token]);
 
   // useEffect(() => {
 
@@ -110,20 +110,25 @@ function Reports() {
     let stdate = new Date(forminputs.startdate);
     let endate = new Date(forminputs.enddate);
     let newData = reportsData.filter((report) => {
-      // console.log(report);
-      let date = new Date(report.startDate);
+      console.log('report',report);
+      let date = new Date(report.start_date);
+      console.log('startDate', stdate);
+      console.log('endDate', endate);
+      console.log('report startDate', date);
       if (date >= stdate && date <= endate) {
+        console.log('inside if block')
         return report;
       }
-      // return;
+      return;
     });
-    // console.log(newData);
+    console.log('newData',newData);
     setReportsData(newData);
   };
   // console.log(reportsData);
   const handleChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
+    console.log(name, value);
     setFormInputs((values) => ({ ...values, [name]: value }));
   };
   const Jobs = [...reportsData];
@@ -131,11 +136,11 @@ function Reports() {
   const headers = [
     {
       label: "JobId",
-      key: "jobId",
+      key: "job_id",
     },
     {
       label: "ProviderId",
-      key: "providerId",
+      key: "provider_id",
     },
     {
       label: "Title",
@@ -143,11 +148,11 @@ function Reports() {
     },
     {
       label: "StartDate",
-      key: "startDate",
+      key: "start_date",
     },
     {
       label: "EndDate",
-      key: "endDate",
+      key: "end_date",
     },
   ];
 
@@ -180,7 +185,7 @@ function Reports() {
                     className={classes.str2}
                     onBlur={validateStart}
                     onChange={handleChange}
-                    name="startdate"
+                    name="start_date"
                     type="date"
                     placeholder="Start Date"
                   />
@@ -206,7 +211,7 @@ function Reports() {
                     className={classes.str21}
                     onBlur={validateEnd}
                     onChange={handleChange}
-                    name="enddate"
+                    name="end_date"
                     type="date"
                     placeholder="End Date"
                   />
@@ -249,12 +254,12 @@ function Reports() {
             </thead>
             <tbody className={classes.tableBody}>
               {slice.map((contact) => (
-                <tr key={contact._id}>
+                <tr key={contact.job_id}>
                   <td>{contact.title}</td>
                   <td>{contact.description}</td>
                   <td>{contact.category}</td>
-                  <td>{contact.startDate}</td>
-                  <td>{contact.endDate}</td>
+                  <td>{contact.start_date}</td>
+                  <td>{contact.end_date}</td>
                 </tr>
               ))}
             </tbody>

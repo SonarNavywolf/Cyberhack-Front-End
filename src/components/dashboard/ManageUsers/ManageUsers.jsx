@@ -6,7 +6,7 @@ import TableFooter from "../Tables/TableFooter";
 import SpinnerComponent from "../../UI/SpinnerComponent";
 import Config from "../../../config/Config.json";
 // import data from "../../../store/userData.json";
-
+import jwtDecode from "jwt-decode";
 import classes from "./ManageUsers.module.css";
 import ManageUserItem from "./ManageUserItem";
 
@@ -22,16 +22,14 @@ const ManageUsers = (props) => {
 
   useEffect(() => {
     setShowSpinner(true);
+    const readAuthToken = jwtDecode(token);
+    const user_id = readAuthToken.user_id;
     axios
-      .get(`${Config.SERVER_URL + "admin/users/"}`, {
-        headers: {
-          Authorization: "Bearer " + token,
-        },
-      })
+      .get(`${Config.SERVER_URL + "api/admin/" + user_id}`)
       .then((response) => {
         const data = response.data.users;
         setShowSpinner(false);
-        // console.log(data);
+        console.log('userData',data);
         userdata = [...data];
         setUserData(data);
       });
@@ -43,24 +41,27 @@ const ManageUsers = (props) => {
     if (event.target.value === "All") {
       setUserData(userdata);
     } else {
-      setUserData(userdata.filter((user) => user.role === event.target.value));
+      setUserData(userdata.filter((user) => user.role_name === event.target.value));
     }
   };
   const searchUserHandler = (event) => {
     const role = roleInputRef.current.value;
+    console.log('role_name', role);
+    console.log('search text',event.target.value.toLowerCase());
+    console.log('user', userData);
     if (role !== "All") {
       setUserData(
         userdata.filter(
           (user) =>
-            user.name
+            user.first_name
               .toLowerCase()
-              .includes(event.target.value.toLowerCase()) && user.role === role
+              .includes(event.target.value.toLowerCase()) && user.role_name === role
         )
       );
     } else {
       setUserData(
         userdata.filter((user) =>
-          user.name.toLowerCase().includes(event.target.value.toLowerCase())
+        user.first_name.toLowerCase().includes(event.target.value.toLowerCase())
         )
       );
     }
@@ -99,8 +100,8 @@ const ManageUsers = (props) => {
               onChange={roleChangeHandler}
             >
               <option value="All">All</option>
-              <option value="User">User</option>
-              <option value="Job Provider">Job Provider</option>
+              <option value="cyber_security_expert">User</option>
+              <option value="ngo">Job Provider</option>
             </select>
           </Col>
         </Col>
@@ -121,11 +122,11 @@ const ManageUsers = (props) => {
           <Table striped hover>
             <thead>
               <tr className={classes.tableHeader}>
-                <th>Name</th>
+                <th>User Id</th>
+                <th>User Role</th>
+                <th>First Name</th>
+                <th>Last Name</th>
                 <th>Email</th>
-                <th>Mobile</th>
-                <th>User Type</th>
-                <th>Created</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -133,7 +134,7 @@ const ManageUsers = (props) => {
               {slice.map((user) => {
                 return (
                   <ManageUserItem
-                    key={user._id}
+                    key={user.user_id}
                     userInfo={user}
                     onEdit={editModalHandler}
                     onDelete={props.onShowDelete}
